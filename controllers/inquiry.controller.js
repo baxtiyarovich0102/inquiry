@@ -35,3 +35,28 @@ exports.startInquiry = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+exports.completeInquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { solutionText } = req.body;
+
+    const inquiry = await Inquiry.findByPk(id);
+    if (!inquiry) {
+      return res.status(404).json({ message: 'Inquiry not found' });
+    }
+
+    if (inquiry.status !== 'in_progress') {
+      return res.status(400).json({ message: 'Only in-progress inquiries can be completed' });
+    }
+
+    inquiry.status = 'completed';
+    inquiry.solutionText = solutionText;
+    await inquiry.save();
+
+    res.status(200).json(inquiry);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
