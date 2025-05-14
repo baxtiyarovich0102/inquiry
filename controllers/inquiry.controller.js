@@ -85,3 +85,27 @@ exports.cancelInquiry = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+exports.cancelAllInProgressInquiries = async (req, res) => {
+  try {
+    const { reason } = req.body;
+
+    const [updatedCount] = await Inquiry.update(
+      {
+        status: 'cancelled',
+        cancelReason: reason || 'Cancelled automatically'
+      },
+      {
+        where: { status: 'in_progress' }
+      }
+    );
+
+    res.status(200).json({
+      message: `${updatedCount} inquiries were cancelled.`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
