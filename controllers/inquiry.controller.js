@@ -60,3 +60,28 @@ exports.completeInquiry = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+exports.cancelInquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cancelReason } = req.body;
+
+    const inquiry = await Inquiry.findByPk(id);
+    if (!inquiry) {
+      return res.status(404).json({ message: 'Inquiry not found' });
+    }
+
+    if (inquiry.status === 'completed' || inquiry.status === 'cancelled') {
+      return res.status(400).json({ message: 'Cannot cancel a completed or already cancelled inquiry' });
+    }
+
+    inquiry.status = 'cancelled';
+    inquiry.cancelReason = cancelReason;
+    await inquiry.save();
+
+    res.status(200).json(inquiry);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
