@@ -109,3 +109,37 @@ exports.cancelAllInProgressInquiries = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+
+exports.getInquiries = async (req, res) => {
+  try {
+    const { date, startDate, endDate } = req.query;
+    const where = {};
+
+    
+    if (date) {
+      const targetDate = new Date(date);
+      const nextDay = new Date(targetDate);
+      nextDay.setDate(targetDate.getDate() + 1);
+
+      where.createdAt = {
+        [db.Sequelize.Op.gte]: targetDate,
+        [db.Sequelize.Op.lt]: nextDay
+      };
+    }
+
+    
+    if (startDate && endDate) {
+      where.createdAt = {
+        [db.Sequelize.Op.between]: [new Date(startDate), new Date(endDate)]
+      };
+    }
+
+    const inquiries = await Inquiry.findAll({ where });
+    res.status(200).json(inquiries);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
