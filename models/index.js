@@ -1,5 +1,5 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const dbConfig = require('../config/db.config');
+const { Sequelize, DataTypes } = require("sequelize");
+const dbConfig = require("../config/db.config");
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
@@ -9,6 +9,6 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.Inquiry = require('./inquiry.model')(sequelize, DataTypes);
+db.Inquiry = require("./inquiry.model")(sequelize, DataTypes);
 
 module.exports = db;
